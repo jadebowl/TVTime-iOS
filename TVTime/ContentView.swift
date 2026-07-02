@@ -9,36 +9,26 @@ import SwiftUI
 
 struct ContentView: View {
     private let searchService: any MediaSearchProviding
-
+    
     init(searchService: any MediaSearchProviding = TMDBSearchService()) {
         self.searchService = searchService
     }
-
+    
     var body: some View {
         TabView {
-            MediaLibraryPlaceholderView(
-                title: "TV Shows",
-                systemImage: "tv",
-                emptyTitle: "Nessuna serie TV",
-                emptyDescription: "Le serie che seguirai appariranno qui."
-            )
-            .tabItem {
-                Label("TV Shows", systemImage: "tv")
-            }
-
-            MediaLibraryPlaceholderView(
-                title: "Movies",
-                systemImage: "film",
-                emptyTitle: "Nessun film",
-                emptyDescription: "I film che salverai appariranno qui."
-            )
-            .tabItem {
-                Label("Movies", systemImage: "film")
-            }
-
+            TVShowsView()
+                .tabItem {
+                    Label(String(localized: "navigation.tvshows"), systemImage: "tv")
+                }
+            
+            MoviesView()
+                .tabItem {
+                    Label(String(localized: "navigation.movies"), systemImage: "film")
+                }
+            
             SearchView(searchService: searchService)
                 .tabItem {
-                    Label("Search", systemImage: "magnifyingglass")
+                    Label(String(localized: "navigation.search"), systemImage: "magnifyingglass")
                 }
         }
     }
@@ -62,23 +52,5 @@ private struct ContentPreviewSearchService: MediaSearchProviding {
                 voteAverage: 8.5
             )
         ]
-    }
-}
-
-private struct MediaLibraryPlaceholderView: View {
-    let title: String
-    let systemImage: String
-    let emptyTitle: String
-    let emptyDescription: String
-
-    var body: some View {
-        NavigationStack {
-            AlignedEmptyStateView(
-                title: emptyTitle,
-                systemImage: systemImage,
-                description: emptyDescription
-            )
-            .navigationTitle(title)
-        }
     }
 }

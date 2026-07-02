@@ -48,8 +48,8 @@ struct SearchView: View {
                 }
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("Cerca")
-            .searchable(text: $searchText, prompt: "Film o serie TV")
+            .navigationTitle(String(localized: "navigation.search"))
+            .searchable(text: $searchText, prompt: Text(String(localized: "search.prompt")))
             .task(id: trimmedSearchText) {
                 await search(trimmedSearchText)
             }
@@ -95,12 +95,12 @@ private struct SearchStatusView: View {
 
     var body: some View {
         if isLoading {
-            ProgressView("Cerco...")
+            ProgressView(String(localized: "search.loading"))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .offset(y: verticalOffset)
         } else if let errorMessage {
             AlignedEmptyStateView(
-                title: "Ricerca non disponibile",
+                title: String(localized: "empty.search.unavailable.title"),
                 systemImage: "wifi.exclamationmark",
                 description: errorMessage,
                 verticalOffset: verticalOffset
@@ -120,11 +120,17 @@ private struct EmptySearchState: View {
 
     var body: some View {
         AlignedEmptyStateView(
-            title: hasSearched ? "Nessun risultato" : "Cerca film e serie TV",
+            title: hasSearched
+                ? String(
+                    localized: "empty.search.noResults.title")
+                : String(
+                    localized: "empty.search.initial.title"),
             systemImage: hasSearched ? "magnifyingglass" : "popcorn",
             description: hasSearched
-            ? "Prova con un altro titolo."
-            : "Inserisci un titolo nella barra di ricerca.",
+                ? String(
+                    localized: "empty.search.noResults.description")
+                : String(
+                    localized: "empty.search.initial.description"),
             verticalOffset: verticalOffset
         )
     }

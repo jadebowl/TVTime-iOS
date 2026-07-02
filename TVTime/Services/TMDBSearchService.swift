@@ -7,10 +7,6 @@
 
 import Foundation
 
-protocol MediaSearchProviding {
-    func search(query: String) async throws -> [MediaSearchResult]
-}
-
 struct TMDBSearchService: MediaSearchProviding {
     private let apiKey: String
     private let session: URLSession
@@ -104,82 +100,5 @@ struct TMDBSearchService: MediaSearchProviding {
         }
 
         return String(date.prefix(4))
-    }
-}
-
-enum TMDBSearchError: LocalizedError {
-    case missingAPIKey
-    case invalidURL
-    case invalidResponse
-    case requestFailed(statusCode: Int)
-
-    var errorDescription: String? {
-        switch self {
-        case .missingAPIKey:
-            "Aggiungi la chiave TMDB in TMDB_API_KEY per cercare film e serie."
-        case .invalidURL:
-            "Non riesco a creare l'URL di ricerca."
-        case .invalidResponse:
-            "La risposta del server non e' valida."
-        case .requestFailed(let statusCode):
-            "La ricerca non e' riuscita. Codice \(statusCode)."
-        }
-    }
-}
-
-private enum TMDBConfiguration {
-    static var apiKey: String {
-        if let value = Bundle.main.object(forInfoDictionaryKey: "TMDB_API_KEY") as? String,
-           !value.isEmpty,
-           !value.hasPrefix("$(") {
-            return value
-        }
-
-        return ProcessInfo.processInfo.environment["TMDB_API_KEY"] ?? ""
-    }
-}
-
-private struct TMDBSearchResponse: Decodable {
-    let results: [TMDBSearchItem]
-}
-
-private struct TMDBSearchItem: Decodable {
-    enum MediaType: String, Decodable {
-        case movie
-        case tv
-        case person
-    }
-
-    let id: Int
-    let mediaType: MediaType
-    let title: String?
-    let name: String?
-    let overview: String?
-    let releaseDate: String?
-    let firstAirDate: String?
-    let posterPath: String?
-    let voteAverage: Double?
-
-    var kind: MediaSearchResult.Kind? {
-        switch mediaType {
-        case .movie:
-            .movie
-        case .tv:
-            .tvShow
-        case .person:
-            nil
-        }
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case id
-        case mediaType = "media_type"
-        case title
-        case name
-        case overview
-        case releaseDate = "release_date"
-        case firstAirDate = "first_air_date"
-        case posterPath = "poster_path"
-        case voteAverage = "vote_average"
     }
 }
